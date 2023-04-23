@@ -1,0 +1,75 @@
+.keyword {
+    -fx-fill: #FF6188 !important;
+    -fx-font-weight: bold;
+}
+
+.operator {
+    -fx-fill: #FF6188 !important;
+    -fx-font-weight: bold;
+}
+
+.function {
+    -fx-fill: #78DCE8 !important;
+    -fx-font-weight: bold;
+}
+
+.semicolon {
+    -fx-fill: white !important;
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: #FF6188 !important;
+    -fx-font-weight: bold;
+}
+
+.bracket {
+    -fx-fill: #FF6188 !important;
+    -fx-font-weight: bold;
+}
+
+.brace {
+    -fx-fill: #FF6188 !important;
+    -fx-font-weight: bold;
+}
+
+.string {
+    -fx-fill: #FFD866 !important;
+}
+
+.number {
+    -fx-fill: #AB9DF2 !important;
+}
+
+.boolean {
+    -fx-fill: #AB9DF2 !important;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: #383539;
+}
+
+.paragraph-text {
+    -fx-tab-size: 4;
+}
+
+.styled-text-area .caret {
+    -fx-stroke: white;
+}
+
+.code-area .text {
+    -fx-fill: #FFFFFF;
+}
+
+.code-area {
+    -fx-background-color: #2d2a2e;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.lineno{
+    -fx-background-color: #2d2a2e;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #383539;
+}
