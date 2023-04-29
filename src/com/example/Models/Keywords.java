@@ -14,23 +14,16 @@ public interface Keywords {
             "AND", "OR", "NOT"
     };
 
-    String[] OPERATORS = new String[] {
-            "[><=+\\-/*!]",
-            "\\>\\=", "\\<\\=", "\\!\\=", "\\=\\=",
-            "\\+\\=", "\\-\\=", "\\*\\=", "\\/\\=",
-            "\\&\\&", "\\|\\|"
-    };
-
     String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
 
-    String OPERATORS_PATTERN = "(" + String.join("|", OPERATORS) + ")";
+    String OPERATORS_PATTERN = "[><=+\\-/*!|&]";
     String LETTER_FUNCTION_PATTERN = "\\b(function)\\b";
     String PAREN_PATTERN = "[()]";
     String BRACE_PATTERN = "[{}]";
     String BRACKET_PATTERN = "[\\[\\]]";
     String SEMICOLON_PATTERN = ";";
     String STRING_PATTERN = "\"[^\"]*\"";
-    String NUMBER_PATTERN = "\\d+\\.?\\d*";
+    String NUMBER_PATTERN = "\\b(\\d+(\\.?)\\d*)";
     String BOOLEAN_PATTERN = "(true|false)";
     Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"

@@ -1,0 +1,21 @@
+.tab-pane {
+    -fx-text-base-color: white;
+}
+
+.tab {
+    -fx-focus-color: #ffd866;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #2d2a2e;
+}
+
+.tab-pane *.tab-header-background {
+    -fx-background-color: #2d2a2e;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #333234;
+    -fx-text-base-color: #ffd866;
+}

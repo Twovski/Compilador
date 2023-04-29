@@ -1,0 +1,41 @@
+.menu-bar {
+    -fx-background-color: #221f22;
+    -fx-font-size: 13px;
+}
+
+.menu-bar .context-menu {
+    -fx-background-color: #2d2a2e;
+}
+
+.menu {
+    -fx-background-color: #221f22;
+}
+
+.menu .label {
+    -fx-text-fill: white;
+}
+
+.menu:hover {
+    -fx-background-color: #333234;
+}
+
+.menu:hover .label {
+    -fx-text-fill: white;
+}
+
+.menu-item {
+    -fx-background-color: #2d2a2e;
+}
+
+.menu-item .label {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #333234;
+}
+
+.menu-item:hover .label {
+    -fx-text-fill: #ffd866;
+}

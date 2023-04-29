@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import org.fxmisc.richtext.CodeArea?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.Controllers.NoteController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyReleased="#keyWindow" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../resources/styles/border-panel.css" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.Controllers.NoteController">
+   <top>
+      <MenuBar stylesheets="@../../../resources/styles/menu.css" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem fx:id="openFile" mnemonicParsing="false" onAction="#actionOpenFile" text="Abrir" />
+                  <MenuItem fx:id="newFile" mnemonicParsing="false" onAction="#actionNewFile" text="Nuevo..." />
+                  <MenuItem fx:id="closeFile" mnemonicParsing="false" onAction="#actionCloseFile" text="Cerrar" />
+                  <MenuItem fx:id="saveFile" mnemonicParsing="false" onAction="#actionSaveFile" text="Guardar" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Fase">
+            <items>
+              <MenuItem fx:id="lexical" mnemonicParsing="false" onAction="#showLexical" text="Lexico" />
+                  <MenuItem fx:id="syntactic" mnemonicParsing="false" onAction="#showSyntactic" text="Sintactico" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Opciones">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#actionExit" text="Salir" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
    <center>
-      <CodeArea fx:id="codeArea" BorderPane.alignment="CENTER" />
+      <ImageView fx:id="imageView" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+         <image>
+            <Image url="@../../../resources/images/extraterrestre.png" />
+         </image>
+      </ImageView>
    </center>
 </BorderPane>
