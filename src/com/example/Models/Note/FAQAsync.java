@@ -1,4 +1,4 @@
-package com.example.Models;
+package com.example.Models.Note;
 
 import javafx.concurrent.Task;
 import org.fxmisc.richtext.CodeArea;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Matcher;
 
-public class FAQAsync implements Keywords{
+public class FAQAsync implements Keywords {
     public ExecutorService executor;
     public CodeArea codeArea;
 

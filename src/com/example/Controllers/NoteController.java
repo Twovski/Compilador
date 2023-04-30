@@ -1,7 +1,8 @@
 package com.example.Controllers;
 
-import com.example.Models.CodeBlock;
-import com.example.Models.WindowKeys;
+import com.example.Models.Lexer;
+import com.example.Models.Note.CodeBlock;
+import com.example.Models.Note.WindowKeys;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -47,11 +48,19 @@ public class NoteController implements Initializable, WindowKeys {
 
     @FXML
     public void showLexical() throws IOException {
+        Tab tab = tabPane.getSelectionModel().getSelectedItem();
+        @SuppressWarnings("unchecked")
+        VirtualizedScrollPane<CodeBlock> scrollPane = (VirtualizedScrollPane<CodeBlock>) tab.getContent();
+        CodeBlock codeBlock = scrollPane.getContent();
+
         Stage stage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/Views/Lexical.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root);
 
+        LexicalController lexicalController = loader.getController();
+        lexicalController.reloadTable(codeBlock);
+
+        Scene scene = new Scene(root);
         stage.setTitle("Lexical");
         stage.setScene(scene);
         stage.initModality(Modality.WINDOW_MODAL);

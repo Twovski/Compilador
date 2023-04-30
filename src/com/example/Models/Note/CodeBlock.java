@@ -1,4 +1,4 @@
-package com.example.Models;
+package com.example.Models.Note;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

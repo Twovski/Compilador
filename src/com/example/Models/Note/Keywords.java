@@ -1,4 +1,4 @@
-package com.example.Models;
+package com.example.Models.Note;
 
 import javafx.concurrent.Task;
 import org.fxmisc.richtext.model.StyleSpans;
