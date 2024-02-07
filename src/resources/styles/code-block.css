@@ -1,0 +1,37 @@
+.keyword {
+    -fx-fill: #004595 !important;
+    -fx-font-weight: bold;
+}
+
+.operator {
+    -fx-fill: black !important;
+    -fx-font-weight: bold;
+}
+
+.semicolon {
+    -fx-fill: black !important;
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: #004595 !important;
+    -fx-font-weight: bold;
+}
+
+.brace {
+    -fx-fill: black !important;
+    -fx-font-weight: bold;
+}
+
+.number {
+    -fx-fill: #9BBB59 !important;
+}
+
+.boolean {
+    -fx-fill: #004595 !important;
+}
+
+.code-area {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
