@@ -155,9 +155,9 @@ public class NoteController implements Initializable {
         Syntax syntax = new Syntax(lexer.getTokenList());
         try {
             syntax.parse();
-            message.setText("Syntax successful");
+            message.setText("Syntax successful!");
         }catch (Exception e){
-            message.setText("Error Syntax");
+            message.setText("Syntax error!");
         }
     }
 

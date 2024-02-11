@@ -24,6 +24,7 @@ public class Syntax {
     private void sentences() throws Exception {
         switch (tokens.get(index).getType()){
             case IF:
+                checkToken("", TokenType.IF);
                 sentenceIf();
                 break;
             case WHILE:
@@ -66,8 +67,10 @@ public class Syntax {
                 break;
             case INTEGER:
                 expressionNumber();
+                break;
             case BOOLEAN:
                 expressionBoolean();
+                break;
             default:
                 throw new Exception("Expression Incorrect");
         }
@@ -89,7 +92,6 @@ public class Syntax {
     }
 
     private void sentenceIf() throws Exception {
-        checkToken("", TokenType.IF);
         checkToken("Left Paren (", TokenType.LEFT_PAREN);
         expressionBoolean();
         checkToken("Right Paren )", TokenType.RIGHT_PAREN);
@@ -100,8 +102,11 @@ public class Syntax {
 
     private void block() throws Exception{
         if(isToken(TokenType.LEFT_BRACE)){
-            sentences();
-            checkToken("Right Brace }", TokenType.RIGHT_BRACE);
+            if(isToken(TokenType.RIGHT_BRACE))
+                return;
+
+            do sentences();
+            while (!isToken(TokenType.RIGHT_BRACE));
             return;
         }
 
@@ -113,23 +118,33 @@ public class Syntax {
             switch (tokens.get(index).getType()){
                 case INTEGER:
                     expressionNumber();
+                    checkToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                            TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
+                            TokenType.LESS_EQUAL, TokenType.LESS_THAN);
+                    expressionNumber();
                     break;
                 case BOOLEAN:
                     checkToken("", TokenType.BOOLEAN);
                     break;
                 case IDENTIFIER:
                     checkToken("", TokenType.IDENTIFIER);
-                    if(isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY))
+                    if(isToken(TokenType.GREATER_EQUAL, TokenType.GREATER_THAN, TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL, TokenType.LESS_EQUAL, TokenType.LESS_THAN))
                         expressionNumber();
+                    else if(isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY)){
+                        expressionNumber();
+                        checkToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                                TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
+                                TokenType.LESS_EQUAL, TokenType.LESS_THAN);
+                        expressionNumber();
+                    }
+
+
                     break;
                 default:
                     throw new Exception("Boolean Expression Incorrect");
             }
         }
-        while (isToken(TokenType.AND, TokenType.OR,
-                TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
-                TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
-                TokenType.LESS_EQUAL, TokenType.LESS_THAN));
+        while (isToken(TokenType.AND, TokenType.OR));
     }
     private void expressionNumber() throws Exception{
         do checkToken("Need number or identifier", TokenType.INTEGER, TokenType.IDENTIFIER);
