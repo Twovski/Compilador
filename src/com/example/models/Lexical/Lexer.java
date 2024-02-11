@@ -32,8 +32,6 @@ public class Lexer implements LexerRegex{
                 token = new Token(TokenType.IF, matcher.group("IF"));
             else if (matcher.group("ELSE") != null)
                 token = new Token(TokenType.ELSE, matcher.group("ELSE"));
-            else if (matcher.group("ELSEIF") != null)
-                token = new Token(TokenType.ELSE_IF, matcher.group("ELSEIF"));
             else if (matcher.group("TYPEBOOLEAN") != null)
                 token = new Token(TokenType.TYPE_BOOLEAN, matcher.group("TYPEBOOLEAN"));
             else if (matcher.group("BOOLEAN") != null)

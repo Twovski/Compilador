@@ -11,15 +11,13 @@ public interface Keywords {
             "if", "else", "else if", "while",
             "int", "boolean", "AND", "OR", "NOT"
     };
-
     String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
-
     String OPERATORS_PATTERN = "[><=+\\-/*!|&]";
     String PAREN_PATTERN = "[()]";
     String BRACE_PATTERN = "[{}]";
     String SEMICOLON_PATTERN = ";";
     String NUMBER_PATTERN = "\\b(\\d+)";
-    String BOOLEAN_PATTERN = "(true|false)";
+    String BOOLEAN_PATTERN = "(\\btrue\\b|\\bfalse\\b)";
     Pattern PATTERN = Pattern.compile(
             "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
                     + "|(?<OPERATOR>" + OPERATORS_PATTERN + ")"

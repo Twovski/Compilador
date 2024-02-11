@@ -3,11 +3,13 @@ package com.example.controllers;
 import com.example.models.Lexical.Lexer;
 import com.example.models.Lexical.Token;
 import com.example.models.Note.CodeBlock;
+import com.example.models.Syntactic.Syntax;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,6 +35,9 @@ public class NoteController implements Initializable {
     private TableView<Token> tableToken;
     @FXML
     private ImageView image;
+    @FXML
+    private Label message;
+    Lexer lexer;
     ObservableList<Token> observableList;
     @FXML
     @Override
@@ -57,6 +62,7 @@ public class NoteController implements Initializable {
         lexical.setDisable(true);
         syntactic.setDisable(true);
         observableList.setAll(new ArrayList<>());
+        message.setText("");
     }
 
     @FXML
@@ -76,6 +82,8 @@ public class NoteController implements Initializable {
         saveAs.setDisable(false);
         lexical.setDisable(false);
         syntactic.setDisable(false);
+        observableList.setAll(new ArrayList<>());
+        message.setText("");
     }
 
     @FXML
@@ -101,6 +109,8 @@ public class NoteController implements Initializable {
         saveAs.setDisable(false);
         lexical.setDisable(false);
         syntactic.setDisable(false);
+        observableList.setAll(new ArrayList<>());
+        message.setText("");
     }
 
     @FXML
@@ -133,7 +143,7 @@ public class NoteController implements Initializable {
     void actionLexical() {
         CodeBlock codeBlock = (CodeBlock) window.getCenter();
         observableList.setAll(new ArrayList<>());
-        Lexer lexer = new Lexer();
+        lexer = new Lexer();
         lexer.tokenize(codeBlock.getText());
         observableList.addAll(lexer.getTokenList());
         tableToken.refresh();
@@ -142,6 +152,13 @@ public class NoteController implements Initializable {
     @FXML
     void actionSyntatic() {
         actionLexical();
+        Syntax syntax = new Syntax(lexer.getTokenList());
+        try {
+            syntax.parse();
+            message.setText("Syntax successful");
+        }catch (Exception e){
+            message.setText("Error Syntax");
+        }
     }
 
     private void writeFile(CodeBlock codeBlock) throws IOException {

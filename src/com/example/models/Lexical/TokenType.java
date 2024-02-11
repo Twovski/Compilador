@@ -12,7 +12,6 @@ public enum TokenType {
     TYPE_BOOLEAN,       // Palabra clave "boolean"
     BOOLEAN,            // Valor booleano (true/false)
     IF,                 // Palabra clave "if"
-    ELSE_IF,            // Palabra clave "else if"
     ELSE,               // Palabra clave "else"
     WHILE,              // Palabra clave "while"
     AND,                // Palabra clave "and"

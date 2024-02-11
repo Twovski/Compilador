@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.models.Syntactic.SyntaxRegex;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
-public class MainFX extends Application {
+public class MainFX extends Application implements SyntaxRegex {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("Views/Note.fxml"));
@@ -26,6 +27,10 @@ public class MainFX extends Application {
             Platform.exit();
             System.exit(0);
         });
+        String a = "a";
+        String b= "b";
+        System.out.println();
+
     }
 
     public static void main(String[] args) {

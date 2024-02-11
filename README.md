@@ -19,10 +19,10 @@
     | <number-expression>
 
 <boolean-expression> => <boolean> | <identifier>
+    | <number-expression> <number-relational-operators> <number-expression>
     | ("NOT" | "!") <boolean-expression> 
     | <boolean-expression> ("AND" | "&&") <boolean-expression>
     | <boolean-expression> ("OR" | "||") <boolean-expression>
-    | <number-expression> <number-relational-operators> <number-expression>
 
 <number-expression> => (<number> | <identifier>) (<number-arithmetic-operators> (<number> | <identifier>))*
 

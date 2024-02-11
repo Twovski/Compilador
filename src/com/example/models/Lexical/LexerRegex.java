@@ -3,7 +3,7 @@ package com.example.models.Lexical;
 import java.util.regex.Pattern;
 
 public interface LexerRegex {
-    String IDENTIFIER_PATTERN = "[a-zA-Z][\\w_]*";
+    String IDENTIFIER_PATTERN = "\\b([a-zA-Z][\\w_]*)\\b";
     String LEFT_PAREN_PATTERN = "\\(";
     String RIGHT_PAREN_PATTERN = "\\)";
     String LEFT_BRACE_PATTERN = "\\{";
@@ -12,11 +12,10 @@ public interface LexerRegex {
     String WHILE_PATTERN = "\\bwhile\\b";
     String IF_PATTERN= "\\bif\\b";
     String ELSE_PATTERN= "\\belse\\b";
-    String ELSE_IF_PATTERN= ELSE_PATTERN + "\\s+" + IF_PATTERN;
     String TYPE_INTEGER_PATTERN = "\\bint\\b";
     String INTEGER_PATTERN = "(-)?\\b(\\d+)";
     String TYPE_BOOLEAN_PATTERN = "\\bboolean\\b";
-    String BOOLEAN_PATTERN = "true|false";
+    String BOOLEAN_PATTERN = "\\btrue\\b|\\bfalse\\b";
     String GREATER_EQUAL_PATTERN = ">=";
     String GREATER_THAN_PATTERN = ">";
     String LESS_THAN_PATTERN = "<";
@@ -35,7 +34,7 @@ public interface LexerRegex {
     String[] ALL_REGEX = {
             LEFT_PAREN_PATTERN, RIGHT_PAREN_PATTERN,
             LEFT_BRACE_PATTERN, RIGHT_BRACE_PATTERN, SEMICOLON_PATTERN,
-            WHILE_PATTERN, IF_PATTERN, ELSE_PATTERN, ELSE_IF_PATTERN,
+            WHILE_PATTERN, IF_PATTERN, ELSE_PATTERN,
             TYPE_INTEGER_PATTERN, INTEGER_PATTERN, TYPE_BOOLEAN_PATTERN, BOOLEAN_PATTERN,
             IDENTIFIER_PATTERN, GREATER_EQUAL_PATTERN, GREATER_THAN_PATTERN,
             LESS_THAN_PATTERN, LESS_EQUAL_PATTERN, NOT_EQUAL_PATTERN, EQUAL_EQUAL_PATTERN,
@@ -51,7 +50,6 @@ public interface LexerRegex {
                     + "|(?<RIGHTPAREN>" + RIGHT_PAREN_PATTERN + ")"
                     + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
                     + "|(?<WHILE>" + WHILE_PATTERN + ")"
-                    + "|(?<ELSEIF>" + ELSE_IF_PATTERN + ")"
                     + "|(?<IF>" + IF_PATTERN + ")"
                     + "|(?<ELSE>" + ELSE_PATTERN + ")"
                     + "|(?<TYPEBOOLEAN>" + TYPE_BOOLEAN_PATTERN + ")"
