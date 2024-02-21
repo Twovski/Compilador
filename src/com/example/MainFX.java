@@ -1,19 +1,22 @@
 package com.example;
 
+import com.ezylang.evalex.EvaluationException;
+import com.ezylang.evalex.Expression;
+import com.ezylang.evalex.data.EvaluationValue;
+import com.ezylang.evalex.parser.ParseException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.Objects;
 
 public class MainFX extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Views/Note.fxml"));
+    public void start(Stage stage) throws IOException, EvaluationException, ParseException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("views/Note.fxml"));
         Scene scene = new Scene(loader.load());
 
         stage.setTitle("Compilador MiniFAQ");
@@ -26,6 +29,9 @@ public class MainFX extends Application {
             Platform.exit();
             System.exit(0);
         });
+        Expression expression = new Expression("!true && !false");
+        EvaluationValue result = expression.evaluate();
+        System.out.println(result.getBooleanValue());
     }
 
     public static void main(String[] args) {

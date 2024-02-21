@@ -1,4 +1,4 @@
-package com.example.models.Lexical;
+package com.example.models.Scanner;
 
 public enum TokenType {
     IDENTIFIER,         // Identificador
@@ -11,9 +11,9 @@ public enum TokenType {
     INTEGER,            // Número entero
     TYPE_BOOLEAN,       // Palabra clave "boolean"
     BOOLEAN,            // Valor booleano (true/false)
-    IF,                 // Palabra clave "if"
-    ELSE,               // Palabra clave "else"
-    WHILE,              // Palabra clave "while"
+    IF_RESERVED,                 // Palabra clave "if"
+    ELSE_RESERVED,               // Palabra clave "else"
+    WHILE_RESERVED,              // Palabra clave "while"
     AND,                // Palabra clave "and"
     OR,                 // Palabra clave "or"
     NOT,                // Palabra clave "not"

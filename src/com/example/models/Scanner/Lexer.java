@@ -1,4 +1,4 @@
-package com.example.models.Lexical;
+package com.example.models.Scanner;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -10,7 +10,7 @@ public class Lexer implements LexerRegex{
         this.tokenList = new ArrayList<>();
     }
 
-    public void tokenize(String text){
+    public void run(String text){
         Matcher matcher = PATTERN.matcher(text);
         Token token;
         while(matcher.find()){
@@ -27,11 +27,11 @@ public class Lexer implements LexerRegex{
             else if (matcher.group("SEMICOLON") != null)
                 token = new Token(TokenType.SEMICOLON, matcher.group("SEMICOLON"));
             else if (matcher.group("WHILE") != null)
-                token = new Token(TokenType.WHILE, matcher.group("WHILE"));
+                token = new Token(TokenType.WHILE_RESERVED, matcher.group("WHILE"));
             else if (matcher.group("IF") != null)
-                token = new Token(TokenType.IF, matcher.group("IF"));
+                token = new Token(TokenType.IF_RESERVED, matcher.group("IF"));
             else if (matcher.group("ELSE") != null)
-                token = new Token(TokenType.ELSE, matcher.group("ELSE"));
+                token = new Token(TokenType.ELSE_RESERVED, matcher.group("ELSE"));
             else if (matcher.group("TYPEBOOLEAN") != null)
                 token = new Token(TokenType.TYPE_BOOLEAN, matcher.group("TYPEBOOLEAN"));
             else if (matcher.group("BOOLEAN") != null)

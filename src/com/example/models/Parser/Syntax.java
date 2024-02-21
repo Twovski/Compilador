@@ -1,7 +1,7 @@
-package com.example.models.Syntactic;
+package com.example.models.Parser;
 
-import com.example.models.Lexical.Token;
-import com.example.models.Lexical.TokenType;
+import com.example.models.Scanner.Token;
+import com.example.models.Scanner.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,48 +9,45 @@ import java.util.List;
 public class Syntax {
     private final ArrayList<Token> tokens;
     private int index;
+    private boolean isComplete;
     public Syntax(ArrayList<Token> tokens){
         this.tokens = tokens;
         index = 0;
+        isComplete = true;
     }
 
-    public void parse() throws Exception {
-        checkToken("Start brace {", TokenType.LEFT_BRACE);
+    public void run() throws Exception {
+        isToken("Start brace {", TokenType.LEFT_BRACE);
         while(index < tokens.size() - 1)
             sentences();
-        checkToken("End brace }", TokenType.RIGHT_BRACE);
+        isToken("End brace }", TokenType.RIGHT_BRACE);
     }
 
     private void sentences() throws Exception {
         switch (tokens.get(index).getType()){
-            case IF:
-                checkToken("", TokenType.IF);
+            case IF_RESERVED:
+                isToken("", TokenType.IF_RESERVED);
                 sentenceIf();
                 break;
-            case WHILE:
+            case WHILE_RESERVED:
                 sentenceWhile();
                 break;
-            case TYPE_INTEGER:
-                checkToken("", TokenType.TYPE_INTEGER);
-                checkToken("Identifier", TokenType.IDENTIFIER);
-                if(isToken(TokenType.EQUAL))
-                    expressionNumber();
-                checkToken("Close ;", TokenType.SEMICOLON);
-                break;
             case TYPE_BOOLEAN:
-                checkToken("", TokenType.TYPE_BOOLEAN);
-                checkToken("Identifier", TokenType.IDENTIFIER);
-                if(isToken(TokenType.EQUAL))
-                    expressionBoolean();
-                checkToken("Close ;", TokenType.SEMICOLON);
+            case TYPE_INTEGER:
+                isToken("", TokenType.TYPE_INTEGER, TokenType.TYPE_BOOLEAN);
+                isToken("Identifier", TokenType.IDENTIFIER);
+                if(isOptionalToken(TokenType.EQUAL))
+                    expression();
+                isToken("Close ;", TokenType.SEMICOLON);
                 break;
             case IDENTIFIER:
-                checkToken("Identifier", TokenType.IDENTIFIER);
-                checkToken("Equal =", TokenType.EQUAL);
+                isToken("Identifier", TokenType.IDENTIFIER);
+                isToken("Equal =", TokenType.EQUAL);
                 expression();
-                checkToken("Close ;", TokenType.SEMICOLON);
+                isToken("Close ;", TokenType.SEMICOLON);
                 break;
             default:
+                isComplete = false;
                 throw new Exception("Sentences Incorrect");
         }
 
@@ -59,10 +56,10 @@ public class Syntax {
     private void expression() throws Exception {
         switch (tokens.get(index).getType()){
             case IDENTIFIER:
-                checkToken("", TokenType.IDENTIFIER);
-                if(isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY))
+                isToken("", TokenType.IDENTIFIER);
+                if(isOptionalToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY))
                     expressionNumber();
-                if(isToken(TokenType.AND, TokenType.OR))
+                if(isOptionalToken(TokenType.AND, TokenType.OR))
                     expressionBoolean();
                 break;
             case INTEGER:
@@ -72,41 +69,39 @@ public class Syntax {
                 expressionBoolean();
                 break;
             default:
+                isComplete = false;
                 throw new Exception("Expression Incorrect");
         }
     }
     private void sentenceWhile() throws Exception {
-        checkToken("", TokenType.WHILE);
-        checkToken("Left Paren (", TokenType.LEFT_PAREN);
+        isToken("", TokenType.WHILE_RESERVED);
+        isToken("Left Paren (", TokenType.LEFT_PAREN);
         expressionBoolean();
-        checkToken("Right Paren )", TokenType.RIGHT_PAREN);
-        if(isToken(TokenType.SEMICOLON))
+        isToken("Right Paren )", TokenType.RIGHT_PAREN);
+        if(isOptionalToken(TokenType.SEMICOLON))
             return;
         block();
     }
     private void sentenceElse() throws Exception {
-        if(isToken(TokenType.IF))
+        if(isOptionalToken(TokenType.IF_RESERVED))
             sentenceIf();
         else
             block();
     }
 
     private void sentenceIf() throws Exception {
-        checkToken("Left Paren (", TokenType.LEFT_PAREN);
+        isToken("Left Paren (", TokenType.LEFT_PAREN);
         expressionBoolean();
-        checkToken("Right Paren )", TokenType.RIGHT_PAREN);
+        isToken("Right Paren )", TokenType.RIGHT_PAREN);
         block();
-        if(isToken(TokenType.ELSE))
+        if(isOptionalToken(TokenType.ELSE_RESERVED))
             sentenceElse();
     }
 
     private void block() throws Exception{
-        if(isToken(TokenType.LEFT_BRACE)){
-            if(isToken(TokenType.RIGHT_BRACE))
-                return;
-
-            do sentences();
-            while (!isToken(TokenType.RIGHT_BRACE));
+        if(isOptionalToken(TokenType.LEFT_BRACE)){
+            while(!isOptionalToken(TokenType.RIGHT_BRACE))
+                sentences();
             return;
         }
 
@@ -114,25 +109,25 @@ public class Syntax {
     }
     private void expressionBoolean() throws Exception {
         do {
-            while (isToken(TokenType.NOT));
+            while (isOptionalToken(TokenType.NOT));
             switch (tokens.get(index).getType()){
                 case INTEGER:
                     expressionNumber();
-                    checkToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                    isToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
                             TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
                             TokenType.LESS_EQUAL, TokenType.LESS_THAN);
                     expressionNumber();
                     break;
                 case BOOLEAN:
-                    checkToken("", TokenType.BOOLEAN);
+                    isToken("", TokenType.BOOLEAN);
                     break;
                 case IDENTIFIER:
-                    checkToken("", TokenType.IDENTIFIER);
-                    if(isToken(TokenType.GREATER_EQUAL, TokenType.GREATER_THAN, TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL, TokenType.LESS_EQUAL, TokenType.LESS_THAN))
+                    isToken("", TokenType.IDENTIFIER);
+                    if(isOptionalToken(TokenType.GREATER_EQUAL, TokenType.GREATER_THAN, TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL, TokenType.LESS_EQUAL, TokenType.LESS_THAN))
                         expressionNumber();
-                    else if(isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY)){
+                    else if(isOptionalToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY)){
                         expressionNumber();
-                        checkToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                        isToken("Need Relational Operator", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
                                 TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
                                 TokenType.LESS_EQUAL, TokenType.LESS_THAN);
                         expressionNumber();
@@ -141,18 +136,21 @@ public class Syntax {
 
                     break;
                 default:
+                    isComplete = false;
                     throw new Exception("Boolean Expression Incorrect");
             }
         }
-        while (isToken(TokenType.AND, TokenType.OR));
+        while (isOptionalToken(TokenType.AND, TokenType.OR));
     }
     private void expressionNumber() throws Exception{
-        do checkToken("Need number or identifier", TokenType.INTEGER, TokenType.IDENTIFIER);
-        while (isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY));
+        do isToken("Need number or identifier", TokenType.INTEGER, TokenType.IDENTIFIER);
+        while (isOptionalToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY));
     }
-    private boolean isToken(TokenType...list) throws Exception {
-        if(index >= tokens.size())
+    private boolean isOptionalToken(TokenType...list) throws Exception {
+        if(index >= tokens.size()){
+            isComplete = false;
             throw new Exception("Tokens are not complete");
+        }
 
         TokenType token = tokens.get(index).getType();
         List<TokenType> types = List.of(list);
@@ -163,15 +161,23 @@ public class Syntax {
         return false;
     }
 
-    private void checkToken(String message, TokenType...list) throws Exception {
-        if(index >= tokens.size())
+    private void isToken(String message, TokenType...list) throws Exception {
+        if(index >= tokens.size()){
+            isComplete = false;
             throw new Exception(message);
+        }
 
         TokenType token = tokens.get(index).getType();
         List<TokenType> types = List.of(list);
-        if(!types.contains(token))
+        if(!types.contains(token)){
+            isComplete = false;
             throw new Exception(message);
+        }
 
         index++;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
     }
 }

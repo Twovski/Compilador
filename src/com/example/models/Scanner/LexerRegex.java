@@ -1,4 +1,4 @@
-package com.example.models.Lexical;
+package com.example.models.Scanner;
 
 import java.util.regex.Pattern;
 

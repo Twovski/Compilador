@@ -11,21 +11,12 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.NoteController">
-   <right>
-      <TableView fx:id="tableToken" prefHeight="200.0" prefWidth="250.0" BorderPane.alignment="CENTER">
-        <columns>
-          <TableColumn fx:id="columnToken" editable="false" prefWidth="75.0" sortable="false" text="Token" />
-          <TableColumn fx:id="columnLexema" editable="false" prefWidth="75.0" sortable="false" text="Lexema" />
-        </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-   </right>
+<BorderPane fx:id="window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.NoteController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -41,35 +32,79 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Options">
                <items>
-                  <MenuItem fx:id="lexical" mnemonicParsing="false" onAction="#actionLexical" text="Lexical" />
-                  <MenuItem fx:id="syntactic" mnemonicParsing="false" onAction="#actionSyntatic" text="Syntactic" />
+                  <MenuItem fx:id="scanner" mnemonicParsing="false" onAction="#actionScanner" text="Scanner" />
+                  <MenuItem fx:id="parser" mnemonicParsing="false" onAction="#actionParser" text="Parser" />
+                  <MenuItem fx:id="semantic" mnemonicParsing="false" onAction="#actionSemantic" text="Semantic" />
                </items>
           </Menu>
         </menus>
       </MenuBar>
    </top>
    <center>
-      <ImageView fx:id="image" fitHeight="300.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-         <image>
-            <Image url="@../../../resources/images/alien.png" />
-         </image>
-         <viewport>
-            <Rectangle2D />
-         </viewport>
-         <cursor>
-            <Cursor fx:constant="DEFAULT" />
-         </cursor>
-      </ImageView>
-   </center>
-   <bottom>
-      <HBox alignment="CENTER" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <GridPane BorderPane.alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+        </rowConstraints>
          <children>
-            <Label fx:id="message" alignment="CENTER">
+            <ImageView fx:id="image" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+               <image>
+                  <Image url="@../../../resources/images/alien.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D />
+               </viewport>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </ImageView>
+            <TableView fx:id="tableToken" prefHeight="200.0" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+              <columns>
+                <TableColumn fx:id="columnToken" editable="false" prefWidth="75.0" sortable="false" text="Token" />
+                <TableColumn fx:id="columnLexema" editable="false" prefWidth="75.0" sortable="false" text="Lexema" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+            <Label text="Program" textAlignment="CENTER">
                <font>
-                  <Font name="Consolas" size="36.0" />
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Scanner" GridPane.columnIndex="1">
+               <font>
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="messageParser" alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+               <font>
+                  <Font name="Consolas" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Parser" GridPane.columnIndex="2">
+               <font>
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Semantic" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="messageSemantic" textAlignment="CENTER" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Consolas" size="24.0" />
                </font>
             </Label>
          </children>
-      </HBox>
-   </bottom>
+      </GridPane>
+   </center>
 </BorderPane>
