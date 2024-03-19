@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import com.example.models.Intermediate.Direction;
+import com.example.models.Intermediate.Translate;
 import com.example.models.Scanner.Lexer;
 import com.example.models.Scanner.Token;
 import com.example.models.Note.CodeBlock;
@@ -11,10 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -32,7 +31,7 @@ public class NoteController implements Initializable {
     @FXML
     private BorderPane window;
     @FXML
-    private MenuItem close, save, saveAs, parser, scanner, semantic;
+    private MenuItem close, save, saveAs, parser, scanner, semantic, intermediate;
     @FXML
     private TableColumn<Token, String> columnLexema, columnToken;
     @FXML
@@ -41,8 +40,11 @@ public class NoteController implements Initializable {
     private ImageView image;
     @FXML
     private Label messageParser, messageSemantic;
+    @FXML
+    private TextArea intermediateMsg;
     Lexer lexer;
     Syntax syntax;
+    Semantic _semantic;
     ObservableList<Token> observableList;
     @FXML
     @Override
@@ -57,6 +59,7 @@ public class NoteController implements Initializable {
         scanner.setDisable(true);
         parser.setDisable(true);
         semantic.setDisable(true);
+        intermediate.setDisable(true);
     }
 
     @FXML
@@ -68,8 +71,11 @@ public class NoteController implements Initializable {
         scanner.setDisable(true);
         parser.setDisable(true);
         semantic.setDisable(true);
+        intermediate.setDisable(true);
         observableList.setAll(new ArrayList<>());
         messageParser.setText("");
+        messageSemantic.setText("");
+        intermediateMsg.clear();
     }
 
     @FXML
@@ -144,6 +150,7 @@ public class NoteController implements Initializable {
         tableToken.refresh();
         messageParser.setText("");
         messageSemantic.setText("");
+        intermediateMsg.clear();
     }
 
     @FXML
@@ -154,24 +161,38 @@ public class NoteController implements Initializable {
             syntax.run();
             messageParser.setText("Syntax successful!");
             messageSemantic.setText("");
+            intermediateMsg.clear();
+
         }catch (Exception e){
-            messageParser.setText("Syntax error!");
+            messageParser.setText("Syntax error: " + e.getMessage());
         }
     }
 
     @FXML
     void actionSemantic(){
         actionParser();
+        _semantic = new Semantic(lexer.getTokenList());
+
         if(!syntax.isComplete())
             return;
 
-        Semantic _semantic = new Semantic(lexer.getTokenList());
         try {
             _semantic.run();
             messageSemantic.setText("Semantic successful!");
+            intermediateMsg.clear();
         } catch (Exception e) {
-            messageSemantic.setText("Semantic error!");
+            messageSemantic.setText("Semantic error: " + e.getMessage());
         }
+    }
+
+    @FXML
+    void actionIntermediate(){
+        actionSemantic();
+        if(!_semantic.isComplete())
+            return;
+        Translate translate = new Translate(lexer.getTokenList());
+        translate.run();
+        intermediateMsg.setText(String.join("\n", translate.getAssembly()));
     }
 
     private void cleanWindow() {
@@ -181,8 +202,11 @@ public class NoteController implements Initializable {
         scanner.setDisable(false);
         parser.setDisable(false);
         semantic.setDisable(false);
+        intermediate.setDisable(false);
         observableList.setAll(new ArrayList<>());
         messageParser.setText("");
+        messageSemantic.setText("");
+        intermediateMsg.clear();
     }
 
     private void writeFile(CodeBlock codeBlock) throws IOException {

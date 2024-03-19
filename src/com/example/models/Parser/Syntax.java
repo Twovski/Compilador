@@ -13,7 +13,7 @@ public class Syntax {
     public Syntax(ArrayList<Token> tokens){
         this.tokens = tokens;
         index = 0;
-        isComplete = true;
+        isComplete = false;
     }
 
     public void run() throws Exception {
@@ -21,6 +21,7 @@ public class Syntax {
         while(index < tokens.size() - 1)
             sentences();
         isToken("End brace }", TokenType.RIGHT_BRACE);
+        isComplete = true;
     }
 
     private void sentences() throws Exception {
@@ -47,7 +48,6 @@ public class Syntax {
                 isToken("Close ;", TokenType.SEMICOLON);
                 break;
             default:
-                isComplete = false;
                 throw new Exception("Sentences Incorrect");
         }
 
@@ -69,7 +69,6 @@ public class Syntax {
                 expressionBoolean();
                 break;
             default:
-                isComplete = false;
                 throw new Exception("Expression Incorrect");
         }
     }
@@ -99,14 +98,11 @@ public class Syntax {
     }
 
     private void block() throws Exception{
-        if(isOptionalToken(TokenType.LEFT_BRACE)){
-            while(!isOptionalToken(TokenType.RIGHT_BRACE))
-                sentences();
-            return;
-        }
-
-        sentences();
+        isToken("Left Brace {", TokenType.LEFT_BRACE);
+        while(!isOptionalToken(TokenType.RIGHT_BRACE))
+            sentences();
     }
+
     private void expressionBoolean() throws Exception {
         do {
             while (isOptionalToken(TokenType.NOT));
@@ -136,7 +132,6 @@ public class Syntax {
 
                     break;
                 default:
-                    isComplete = false;
                     throw new Exception("Boolean Expression Incorrect");
             }
         }
@@ -147,10 +142,9 @@ public class Syntax {
         while (isOptionalToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY));
     }
     private boolean isOptionalToken(TokenType...list) throws Exception {
-        if(index >= tokens.size()){
-            isComplete = false;
+        if(index >= tokens.size())
             throw new Exception("Tokens are not complete");
-        }
+
 
         TokenType token = tokens.get(index).getType();
         List<TokenType> types = List.of(list);
@@ -163,14 +157,12 @@ public class Syntax {
 
     private void isToken(String message, TokenType...list) throws Exception {
         if(index >= tokens.size()){
-            isComplete = false;
             throw new Exception(message);
         }
 
         TokenType token = tokens.get(index).getType();
         List<TokenType> types = List.of(list);
         if(!types.contains(token)){
-            isComplete = false;
             throw new Exception(message);
         }
 

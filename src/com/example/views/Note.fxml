@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -35,6 +36,7 @@
                   <MenuItem fx:id="scanner" mnemonicParsing="false" onAction="#actionScanner" text="Scanner" />
                   <MenuItem fx:id="parser" mnemonicParsing="false" onAction="#actionParser" text="Parser" />
                   <MenuItem fx:id="semantic" mnemonicParsing="false" onAction="#actionSemantic" text="Semantic" />
+                  <MenuItem fx:id="intermediate" mnemonicParsing="false" onAction="#actionIntermediate" text="Intermediate" />
                </items>
           </Menu>
         </menus>
@@ -104,6 +106,16 @@
                   <Font name="Consolas" size="24.0" />
                </font>
             </Label>
+            <Label text="Intermediate" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="intermediateMsg" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Consolas" size="18.0" />
+               </font>
+            </TextArea>
          </children>
       </GridPane>
    </center>

@@ -1,8 +1,7 @@
 package com.example;
 
+import com.example.models.Intermediate.Postfix;
 import com.ezylang.evalex.EvaluationException;
-import com.ezylang.evalex.Expression;
-import com.ezylang.evalex.data.EvaluationValue;
 import com.ezylang.evalex.parser.ParseException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -11,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class MainFX extends Application {
@@ -29,9 +30,6 @@ public class MainFX extends Application {
             Platform.exit();
             System.exit(0);
         });
-        Expression expression = new Expression("!true && !false");
-        EvaluationValue result = expression.evaluate();
-        System.out.println(result.getBooleanValue());
     }
 
     public static void main(String[] args) {

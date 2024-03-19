@@ -11,19 +11,20 @@ import java.util.List;
 
 public class Semantic {
     private final ArrayList<Token> tokens;
-    private final HashMap<String, VariableData> stack;
+    private final HashMap<String, VariableData> map;
     private int index;
     private boolean isComplete;
     public Semantic(ArrayList<Token> tokens){
         this.tokens = tokens;
-        this.stack = new HashMap<>();
-        this.isComplete = true;
+        this.map = new HashMap<>();
+        this.isComplete = false;
         index = 0;
     }
 
     public void run() throws Exception {
-        while(index < tokens.size() - 1)
+        while(index < tokens.size())
             sentences();
+        isComplete = true;
     }
 
     private void sentences() throws Exception {
@@ -32,56 +33,51 @@ public class Semantic {
         VariableData variable;
         switch (tokens.get(index).getType()){
             case TYPE_INTEGER:
-                type = getToken(TokenType.TYPE_INTEGER).getType();
-                name = getToken(TokenType.IDENTIFIER).getValue();
-                if(existID(name)){
-                    isComplete = false;
+                type = getToken("Need Type Value", TokenType.TYPE_INTEGER).getType();
+                name = getToken("Need Identifier", TokenType.IDENTIFIER).getValue();
+                if(existID(name))
                     throw new Exception("Repeated variable");
-                }
 
                 variable = new VariableData(type, name);
                 if(isToken(TokenType.EQUAL)){
-                    getToken(TokenType.EQUAL);
+                    getToken("Need Equal =", TokenType.EQUAL);
                     variable.value = expressionNumber();
                 }
 
-                stack.put(name, variable);
+                map.put(name, variable);
                 break;
             case TYPE_BOOLEAN:
-                type = getToken(TokenType.TYPE_BOOLEAN).getType();
-                name = getToken(TokenType.IDENTIFIER).getValue();
-                if(existID(name)){
-                    isComplete = false;
+                type = getToken("Need Type Value", TokenType.TYPE_BOOLEAN).getType();
+                name = getToken("Need Identifier", TokenType.IDENTIFIER).getValue();
+                if(existID(name))
                     throw new Exception("Repeated variable");
-                }
 
                 variable = new VariableData(type, name);
                 if(isToken(TokenType.EQUAL)){
-                    getToken(TokenType.EQUAL);
+                    getToken("Need Equal =", TokenType.EQUAL);
                     variable.value = expressionBoolean();
                 }
 
-                stack.put(name, variable);
+                map.put(name, variable);
                 break;
             case IDENTIFIER:
-                name = getToken(TokenType.IDENTIFIER).getValue();
-                if(!existID(name)){
-                    isComplete = false;
+                name = getToken("Need Identifier", TokenType.IDENTIFIER).getValue();
+                variable = map.get(name);
+                if(variable == null)
                     throw new Exception("Undeclared variable");
-                }
-                variable = stack.get(name);
-                getToken(TokenType.EQUAL);
+
+                getToken("Need Equal =", TokenType.EQUAL);
                 if(variable.type == TokenType.TYPE_INTEGER)
                     variable.value = expressionNumber();
                 else
                     variable.value = expressionBoolean();
 
-                stack.replace(name, variable);
+                map.replace(name, variable);
                 break;
             case LEFT_PAREN:
-                getToken(TokenType.LEFT_PAREN);
+                getToken("Need Left Paren (", TokenType.LEFT_PAREN);
                 expressionBoolean();
-                getToken(TokenType.RIGHT_PAREN);
+                getToken("Need Right Paren )", TokenType.RIGHT_PAREN);
                 break;
             default:
                 index++;
@@ -89,84 +85,82 @@ public class Semantic {
     }
 
     private String expressionBoolean() throws Exception {
-        String express = "";
+        StringBuilder express = new StringBuilder();
         int negative = 0;
         do{
             while (isToken(TokenType.NOT)){
                 negative++;
-                getToken(TokenType.NOT);
+                getToken("", TokenType.NOT);
             }
 
             if(negative % 2 == 1)
-                express += "!";
+                express.append("!");
 
             switch (tokens.get(index).getType()){
                 case INTEGER:
-                    express += expressionNumber();
-                    express += getToken(TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                    express.append(expressionNumber());
+                    express.append(getToken("Need Operator Relational", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
                             TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
-                            TokenType.LESS_EQUAL, TokenType.LESS_THAN).getValue();
-                    express += expressionNumber();
+                            TokenType.LESS_EQUAL, TokenType.LESS_THAN).getValue());
+                    express.append(expressionNumber());
                     break;
                 case BOOLEAN:
-                    express += getToken(TokenType.BOOLEAN).getValue();
+                    express.append(getToken("", TokenType.BOOLEAN).getValue());
                     break;
                 case IDENTIFIER:
                     Token token = tokens.get(index);
-                    VariableData data = stack.get(token.getValue());
-                    if(data == null){
-                        isComplete = false;
+                    VariableData data = map.get(token.getValue());
+                    if(data == null)
                         throw new Exception("Undeclared variable");
-                    }
 
                     if(data.type == TokenType.TYPE_INTEGER){
-                        express += expressionNumber();
-                        express += getToken(TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
+                        express.append(expressionNumber());
+                        express.append(getToken("Need Operator Relational", TokenType.GREATER_EQUAL, TokenType.GREATER_THAN,
                                 TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL,
-                                TokenType.LESS_EQUAL, TokenType.LESS_THAN).getValue();
-                        express += expressionNumber();
+                                TokenType.LESS_EQUAL, TokenType.LESS_THAN).getValue());
+                        express.append(expressionNumber());
                     }
                     else {
-                        getToken(TokenType.IDENTIFIER);
-                        express += data.value;
+                        getToken("Need Identifier", TokenType.IDENTIFIER);
+                        express.append(data.value);
                     }
                     break;
             }
 
             if(!isToken(TokenType.OR, TokenType.AND))
                 break;
-            express += getToken(TokenType.OR, TokenType.AND).getValue();
+            express.append(getToken("Expression boolean", TokenType.OR, TokenType.AND).getValue());
             negative = 0;
         }while (true);
 
-        express = express
+        express = new StringBuilder(express.toString()
                 .replace("AND", "&&")
                 .replace("OR", "||")
-                .replace("NOT", "!");
+                .replace("NOT", "!"));
 
-        Expression expression = new Expression(express);
+        Expression expression = new Expression(express.toString());
         EvaluationValue result = expression.evaluate();
         return result.getBooleanValue().toString();
     }
 
     private String expressionNumber() throws Exception {
-        String express = "";
+        StringBuilder express = new StringBuilder();
         do {
-            express += getInteger();
+            express.append(getInteger());
             if(!isToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY))
                 break;
 
-            express += getToken(TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY).getValue();
+            express.append(getToken("Need Operator", TokenType.PLUS, TokenType.DIVIDE, TokenType.MINUS, TokenType.MULTIPLY).getValue());
         }
         while (true);
 
-        Expression expression = new Expression(express);
+        Expression expression = new Expression(express.toString());
         EvaluationValue result = expression.evaluate();
         return result.getNumberValue().toBigInteger().toString();
     }
 
     private String getInteger() throws Exception {
-        Token token = getToken(TokenType.IDENTIFIER, TokenType.INTEGER);
+        Token token = getToken("Need a integer", TokenType.IDENTIFIER, TokenType.INTEGER);
 
         if(token.getType() == TokenType.IDENTIFIER)
             return isIntegerID(token).value;
@@ -174,20 +168,18 @@ public class Semantic {
     }
 
     private VariableData isIntegerID(Token token) throws Exception {
-        VariableData variable = stack.get(token.getValue());
-        if(!existID(variable.name)){
-            isComplete = false;
+        VariableData variable = map.get(token.getValue());
+        if(variable == null)
             throw new Exception("Undeclared variable");
-        }
-        if(variable.type != TokenType.TYPE_INTEGER){
-            isComplete = false;
+
+        if(variable.type != TokenType.TYPE_INTEGER)
             throw new Exception("Variable is not defined as integer");
-        }
+
         return variable;
     }
 
-    private boolean existID(String name){
-        return stack.get(name) != null;
+    private boolean existID(String name) {
+        return map.get(name) != null;
     }
 
     private boolean isToken(TokenType ...list){
@@ -196,13 +188,17 @@ public class Semantic {
         return types.contains(token);
     }
 
-    private Token getToken(TokenType ...list){
+    private Token getToken(String message, TokenType ...list) throws Exception {
         Token token = tokens.get(index);
         List<TokenType> types = List.of(list);
         if(!types.contains(token.getType()))
-            return null;
+            throw new Exception(message);
 
         index++;
         return token;
+    }
+
+    public boolean isComplete() {
+        return isComplete;
     }
 }
