@@ -11,13 +11,11 @@ public class Translate {
     private final HashMap<String, Quadruple> variable;
     private HashMap<Integer, StringBuilder> tags;
     private final ArrayList<StringBuilder> assembly, code;
-    private int index;
     public Translate(ArrayList<Token> tokens){
         assembly = new ArrayList<>();
         code = new ArrayList<>();
         variable = new HashMap<>();
         tags = new HashMap<>();
-        index = 0;
         startDirection(tokens);
     }
 
@@ -82,7 +80,7 @@ public class Translate {
                             .append("?");
                     break;
                 case "=":
-                    String type = value.arg1.matches("-?\\d+") ? "dw" : "db";
+                    String type = value.arg1.matches("-?\\d+") || value.arg1.startsWith("_T") ? "dw" : "db";
                     result.append("\t")
                             .append(value.result)
                             .append("\t")
@@ -99,7 +97,7 @@ public class Translate {
 
     private void startCode(Quadruple quadruple){
         StringBuilder result = new StringBuilder();
-        int size = 0;
+        int size;
         switch (quadruple.operator){
             case "=":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
@@ -118,23 +116,14 @@ public class Translate {
             case "*":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
                 result.append("\t").append("MOV BX, ").append(quadruple.arg2).append("\n");
-                result.append("\t").append("MUL BX, ").append("\n");
+                result.append("\t").append("MUL BX").append("\n");
                 result.append("\t").append("MOV ").append(quadruple.result).append(", AX");
                 break;
             case "/":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
                 result.append("\t").append("MOV BX, ").append(quadruple.arg2).append("\n");
-                result.append("\t").append("DIV BX, ").append("\n");
+                result.append("\t").append("DIV BX").append("\n");
                 result.append("\t").append("MOV ").append(quadruple.result).append(", AX");
-                break;
-            case ">":
-                result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
-                result.append("\t").append("CMP AX, ").append(quadruple.arg2).append("\n");
-                result.append("\t").append("LAHF").append("\n");
-                result.append("\t").append("MOV ").append(quadruple.result).append(", AH").append("\n");
-                result.append("\t").append("NOT ").append(quadruple.result).append("\n");
-                result.append("\t").append("ROL ").append(quadruple.result).append(", 1").append("\n");
-                result.append("\t").append("AND ").append(quadruple.result).append(", 1");
                 break;
             case ">=":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
@@ -143,10 +132,7 @@ public class Translate {
                 result.append("\t").append("MOV ").append(quadruple.result).append(", AH").append("\n");
                 result.append("\t").append("NOT ").append(quadruple.result).append("\n");
                 result.append("\t").append("ROL ").append(quadruple.result).append(", 1").append("\n");
-                result.append("\t").append("AND ").append(quadruple.result).append(", 1").append("\n");
-                result.append("\t").append("ROL AH, 2").append("\n");
-                result.append("\t").append("AND AH, 1").append("\n");
-                result.append("\t").append("OR ").append(quadruple.result).append(", AH");
+                result.append("\t").append("AND ").append(quadruple.result).append(", 1");
                 break;
             case "<":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
@@ -156,16 +142,26 @@ public class Translate {
                 result.append("\t").append("ROL ").append(quadruple.result).append(", 1").append("\n");
                 result.append("\t").append("AND ").append(quadruple.result).append(", 1");
                 break;
+            case ">":
+                result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
+                result.append("\t").append("MOV BX, ").append(quadruple.arg2).append("\n");
+                result.append("\t").append("ADD BX, 1").append("\n");
+                result.append("\t").append("CMP AX, BX").append("\n");
+                result.append("\t").append("LAHF").append("\n");
+                result.append("\t").append("MOV ").append(quadruple.result).append(", AH").append("\n");
+                result.append("\t").append("NOT ").append(quadruple.result).append("\n");
+                result.append("\t").append("ROL ").append(quadruple.result).append(", 1").append("\n");
+                result.append("\t").append("AND ").append(quadruple.result).append(", 1");
+                break;
             case "<=":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
-                result.append("\t").append("CMP AX, ").append(quadruple.arg2).append("\n");
+                result.append("\t").append("MOV BX, ").append(quadruple.arg2).append("\n");
+                result.append("\t").append("ADD BX, 1").append("\n");
+                result.append("\t").append("CMP AX, BX").append("\n");
                 result.append("\t").append("LAHF").append("\n");
                 result.append("\t").append("MOV ").append(quadruple.result).append(", AH").append("\n");
                 result.append("\t").append("ROL ").append(quadruple.result).append(", 1").append("\n");
-                result.append("\t").append("AND ").append(quadruple.result).append(", 1").append("\n");
-                result.append("\t").append("ROL AH, 2").append("\n");
-                result.append("\t").append("AND AH, 1").append("\n");
-                result.append("\t").append("OR ").append(quadruple.result).append(", AH");
+                result.append("\t").append("AND ").append(quadruple.result).append(", 1");
                 break;
             case "==":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
