@@ -1,7 +1,6 @@
 package com.example.models.Intermediate;
 
 import com.example.models.Scanner.Token;
-import com.example.models.Scanner.TokenType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,8 +45,8 @@ public class Translate {
         }
 
         variable.forEach((key, value) -> {
-            StringBuilder result =  new StringBuilder();
-            switch (value.operator){
+            StringBuilder result = new StringBuilder();
+            switch (value.operator) {
                 case ">":
                 case ">=":
                 case "!=":
@@ -96,8 +95,8 @@ public class Translate {
 
 
     private void startCode(Quadruple quadruple){
-        StringBuilder result = new StringBuilder();
         int size;
+        StringBuilder result = new StringBuilder();
         switch (quadruple.operator){
             case "=":
                 result.append("\t").append("MOV AX, ").append(quadruple.arg1).append("\n");
@@ -203,9 +202,9 @@ public class Translate {
                 result.append("\t").append("CMP ").append(quadruple.arg1).append(", 1").append("\n");
                 result.append("\t").append("JNZ ").append("Else").append(size);
                 tags.put(size,
-                        new StringBuilder("\t").append("Else").append(size).append(":"));
+                        new StringBuilder("\t").append("Else").append(size).append(":")
+                );
                 break;
-
             case "else":
                 size = Integer.parseInt(quadruple.result);
                 result.append("\t").append("JMP FinishIF").append(size);

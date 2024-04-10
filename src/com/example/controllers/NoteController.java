@@ -23,9 +23,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class NoteController implements Initializable {
     @FXML
@@ -192,7 +190,54 @@ public class NoteController implements Initializable {
             return;
         Translate translate = new Translate(lexer.getTokenList());
         translate.run();
-        intermediateMsg.setText(String.join("\n", translate.getAssembly()));
+        String assemblyCode = String.join("\n", translate.getAssembly());
+        //intermediateMsg.setText(assemblyCode);
+        ArrayList<String> newAssemblyCode = new ArrayList<>(List.of(assemblyCode.split("\n")));
+        newAssemblyCode = assemblyWithDirection(newAssemblyCode);
+        intermediateMsg.setText( String.join("\n", newAssemblyCode));
+    }
+
+    private ArrayList<String> assemblyWithDirection(ArrayList<String> assembly){
+        int index = 3, count = 0;
+        while(assembly.size() > index){
+           ArrayList<String> instruction = new ArrayList<>(List.of(assembly.get(index).trim().split("\\s+")));
+           if(instruction.contains(".code")){
+               index++;
+               break;
+           }
+
+            if(instruction.get(1).equals("dw")){
+                instruction.add(0, String.format("%04X", count) + ":");
+                count += 2;
+            }
+            else {
+                instruction.add(0, String.format("%04X", count) + ":");
+                count += 1;
+            }
+
+            assembly.set(index, String.join("\t", instruction));
+            index++;
+        }
+
+        count = 0;
+        while(assembly.size() > index){
+            String text = assembly.get(index);
+            if(text.isBlank()){
+                index++;
+                continue;
+            }
+
+            ArrayList<String> instruction = new ArrayList<>(List.of(text.trim().split("\\s+")));
+            if(instruction.contains(".exit"))
+                break;
+
+            instruction.add(0, String.format("%04X", count) + ":");
+            assembly.set(index, String.join("\t", instruction));
+            index++;
+            count++;
+        }
+
+        return assembly;
     }
 
     private void cleanWindow() {

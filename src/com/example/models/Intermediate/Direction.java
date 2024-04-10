@@ -12,16 +12,14 @@ public class Direction {
     public final ArrayList<Quadruple> quadruples;
     public final HashSet<String> temporal;
     private final ArrayList<Token> tokens;
-    private final Stack<Stack<Integer>> stacksIf, stacksWhile;
-    private boolean isOnlyElse;
+    private final Stack<Stack<Integer>> stacksIf, stacksJump;
     private int index;
 
     public Direction(ArrayList<Token> tokens){
         quadruples = new ArrayList<>();
         temporal = new HashSet<>();
         stacksIf = new Stack<>();
-        stacksWhile = new Stack<>();
-        isOnlyElse = false;
+        stacksJump = new Stack<>();
         index = 0;
         this.tokens = tokens;
     }
@@ -32,16 +30,16 @@ public class Direction {
     }
 
     public void sentences(){
-        Stack<Integer> stackWhile;
+        Stack<Integer> stackJump;
         switch (tokens.get(index).getType()){
             case LEFT_BRACE:
                 stacksIf.push(new Stack<>());
-                stacksWhile.push(new Stack<>());
+                stacksJump.push(new Stack<>());
                 index++;
                 break;
             case WHILE_RESERVED:
-                stackWhile = stacksWhile.peek();
-                stackWhile.push(quadruples.size());
+                stackJump = stacksJump.peek();
+                stackJump.push(quadruples.size());
                 resolveIf_While(TokenType.LEFT_BRACE);
                 break;
             case IF_RESERVED:
@@ -55,6 +53,8 @@ public class Direction {
                 index++;
                 break;
             case RIGHT_BRACE:
+                stacksIf.pop();
+                stacksJump.pop();
                 resolveBrace();
                 index++;
                 break;
@@ -65,32 +65,38 @@ public class Direction {
     }
 
     private void resolveBrace(){
-        Stack<Integer> stackIf = stacksIf.pop();
+        resolveBraceIf();
+
+        if(stacksJump.isEmpty())
+            return;
+
+        Stack<Integer> stackJump = stacksJump.peek();
+        while (!stackJump.isEmpty()) {
+            int position = stackJump.pop();
+            quadruples.add(new Quadruple("jump", null, null, String.valueOf(position)));
+        }
+    }
+
+    private void resolveBraceIf(){
+        if(stacksIf.isEmpty())
+            return;
+
+        if(tokens.size() <= index + 1)
+            return;
+
+        Token token = tokens.get(index + 1);
+        if(token.getType() == TokenType.ELSE_RESERVED)
+            return;
+
+        Stack<Integer> stackIf = stacksIf.peek();
         while (!stackIf.isEmpty()) {
             int position = stackIf.pop();
             Quadruple quadruple = quadruples.get(position);
             int result = quadruple.operator.equals("while") ? quadruples.size() + 1 : quadruples.size();
             quadruple.result = String.valueOf(result);
         }
-
-        Stack<Integer> stackWhile = stacksWhile.pop();
-        while (!stackWhile.isEmpty()) {
-            int position = stackWhile.pop();
-            quadruples.add(new Quadruple("jump", null, null, String.valueOf(position)));
-        }
-
-        if(!isOnlyElse)
-            return;
-
-        isOnlyElse = false;
-        stackIf = stacksIf.pop();
-        while (!stackIf.isEmpty()) {
-            int position = stackIf.pop();
-            Quadruple quadruple = quadruples.get(position);
-            quadruple.result = String.valueOf(quadruples.size());
-            stacksIf.push(stackIf);
-        }
     }
+
 
     private void resolveElse(){
         quadruples.add(new Quadruple(
@@ -108,12 +114,12 @@ public class Direction {
         Quadruple quadruple = quadruples.get(position);
         quadruple.result = String.valueOf(quadruples.size());
         stackIf.push(quadruples.size() - 1);
-        isOnlyElse = tokens.get(index + 1).getType() == TokenType.LEFT_BRACE;
     }
 
     private void resolveIf_While(TokenType ...type){
         int x = 0, count = 1;
         ArrayList<String> postfix = getPostfix(type);
+        Stack<Integer> stack;
         while(postfix.size() != 1) {
             String operator = postfix.get(x);
             String result = "_B" + count;
@@ -136,7 +142,7 @@ public class Direction {
                     break;
                 case "while":
                 case "if":
-                    Stack<Integer> stack = stacksIf.pop();
+                    stack = stacksIf.pop();
                     stack.push(quadruples.size());
                     x -= 1;
                     quadruples.add(new Quadruple(
