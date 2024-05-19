@@ -3,18 +3,17 @@ package com.example.models.Intermediate;
 import com.example.models.Scanner.Token;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Translate {
     private ArrayList<Quadruple> quadruples;
     private final HashMap<String, Quadruple> variable;
-    private HashMap<Integer, StringBuilder> tags;
+    private final ArrayList<TagASM> tags;
     private final ArrayList<StringBuilder> assembly, code;
     public Translate(ArrayList<Token> tokens){
         assembly = new ArrayList<>();
         code = new ArrayList<>();
         variable = new HashMap<>();
-        tags = new HashMap<>();
+        tags = new ArrayList<>();
         startDirection(tokens);
     }
 
@@ -201,29 +200,23 @@ public class Translate {
                 size = Integer.parseInt(quadruple.result);
                 result.append("\t").append("CMP ").append(quadruple.arg1).append(", 1").append("\n");
                 result.append("\t").append("JNZ ").append("Else").append(size);
-                tags.put(size,
-                        new StringBuilder("\t").append("Else").append(size).append(":")
-                );
+                tags.add(new TagASM(size, new StringBuilder("\t").append("Else").append(size).append(":")));
                 break;
             case "else":
                 size = Integer.parseInt(quadruple.result);
                 result.append("\t").append("JMP FinishIF").append(size);
-                tags.put(Integer.parseInt(quadruple.result),
-                        new StringBuilder("\t").append("FinishIF").append(size).append(":")
-                );
+                tags.add(new TagASM(size, new StringBuilder("\t").append("FinishIF").append(size).append(":")));
                 break;
             case "while":
                 size = Integer.parseInt(quadruple.result);
                 result.append("\t").append("CMP ").append(quadruple.arg1).append(", 1").append("\n");
                 result.append("\t").append("JNZ ").append("FinishWhile").append(size);
-                tags.put(Integer.parseInt(quadruple.result),
-                        new StringBuilder("\t").append("FinishWhile").append(size).append(":"));
+                tags.add(new TagASM(size, new StringBuilder("\t").append("FinishWhile").append(size).append(":")));
                 break;
             case "jump":
                 size = Integer.parseInt(quadruple.result);
                 result.append("\t").append("JMP StartWhile").append(quadruple.result);
-                tags.put(size,
-                        new StringBuilder("\t").append("StartWhile").append(size).append(":"));
+                tags.add(new TagASM(size, new StringBuilder("\t").append("StartWhile").append(size).append(":")));
                 break;
         }
         result.append("\n");
@@ -231,18 +224,10 @@ public class Translate {
     }
 
     private void addTags(){
-        tags = sortTags();
-        tags.forEach(code::add);
-    }
-
-    public HashMap<Integer, StringBuilder> sortTags() {
-        return tags.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));
+        tags.sort((tag1, tag2) -> Integer.compare(tag2.getIndex(), tag1.getIndex()));
+        tags.forEach(tag -> {
+            code.add(tag.getIndex(), tag.getTag());
+        });
     }
 
     public void startDirection(ArrayList<Token> tokens){

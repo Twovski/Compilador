@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.models.CodeBinary.Object;
 import com.example.models.Intermediate.Direction;
 import com.example.models.Intermediate.Translate;
 import com.example.models.Scanner.Lexer;
@@ -29,7 +30,7 @@ public class NoteController implements Initializable {
     @FXML
     private BorderPane window;
     @FXML
-    private MenuItem close, save, saveAs, parser, scanner, semantic, intermediate;
+    private MenuItem close, save, saveAs, parser, scanner, semantic, intermediate, binCode;
     @FXML
     private TableColumn<Token, String> columnLexema, columnToken;
     @FXML
@@ -39,10 +40,11 @@ public class NoteController implements Initializable {
     @FXML
     private Label messageParser, messageSemantic;
     @FXML
-    private TextArea intermediateMsg;
+    private TextArea intermediateMsg, codeBinMsg;
     Lexer lexer;
     Syntax syntax;
     Semantic _semantic;
+    Translate translate;
     ObservableList<Token> observableList;
     @FXML
     @Override
@@ -58,6 +60,7 @@ public class NoteController implements Initializable {
         parser.setDisable(true);
         semantic.setDisable(true);
         intermediate.setDisable(true);
+        binCode.setDisable(true);
     }
 
     @FXML
@@ -70,10 +73,12 @@ public class NoteController implements Initializable {
         parser.setDisable(true);
         semantic.setDisable(true);
         intermediate.setDisable(true);
+        binCode.setDisable(true);
         observableList.setAll(new ArrayList<>());
         messageParser.setText("");
         messageSemantic.setText("");
         intermediateMsg.clear();
+        codeBinMsg.clear();
     }
 
     @FXML
@@ -188,15 +193,29 @@ public class NoteController implements Initializable {
         actionSemantic();
         if(!_semantic.isComplete())
             return;
-        Translate translate = new Translate(lexer.getTokenList());
+        translate = new Translate(lexer.getTokenList());
         translate.run();
         String assemblyCode = String.join("\n", translate.getAssembly());
         //intermediateMsg.setText(assemblyCode);
+
         ArrayList<String> newAssemblyCode = new ArrayList<>(List.of(assemblyCode.split("\n")));
-        newAssemblyCode = assemblyWithDirection(newAssemblyCode);
+        assemblyWithDirection(newAssemblyCode);
         intermediateMsg.setText( String.join("\n", newAssemblyCode));
     }
 
+    @FXML
+    void actionBinCode(){
+        actionIntermediate();
+        if(!_semantic.isComplete())
+            return;
+        String assembly = String.join("\n", translate.getAssembly());
+        Object code = new Object(new ArrayList<>(List.of(assembly.split("\n"))));
+        code.run();
+
+        String binary = String.join("\n", code.getBinaryCode());
+        binary = binary.replaceAll("(.{4})", "$1 ");
+        codeBinMsg.setText(binary);
+    }
     private ArrayList<String> assemblyWithDirection(ArrayList<String> assembly){
         int index = 3, count = 0;
         while(assembly.size() > index){
@@ -219,6 +238,7 @@ public class NoteController implements Initializable {
             index++;
         }
 
+        /*
         count = 0;
         while(assembly.size() > index){
             String text = assembly.get(index);
@@ -236,6 +256,7 @@ public class NoteController implements Initializable {
             index++;
             count++;
         }
+        */
 
         return assembly;
     }
@@ -248,10 +269,12 @@ public class NoteController implements Initializable {
         parser.setDisable(false);
         semantic.setDisable(false);
         intermediate.setDisable(false);
+        binCode.setDisable(false);
         observableList.setAll(new ArrayList<>());
         messageParser.setText("");
         messageSemantic.setText("");
         intermediateMsg.clear();
+        codeBinMsg.clear();
     }
 
     private void writeFile(CodeBlock codeBlock) throws IOException {

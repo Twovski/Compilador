@@ -37,6 +37,7 @@
                   <MenuItem fx:id="parser" mnemonicParsing="false" onAction="#actionParser" text="Parser" />
                   <MenuItem fx:id="semantic" mnemonicParsing="false" onAction="#actionSemantic" text="Semantic" />
                   <MenuItem fx:id="intermediate" mnemonicParsing="false" onAction="#actionIntermediate" text="Intermediate" />
+                  <MenuItem fx:id="binCode" mnemonicParsing="false" onAction="#actionBinCode" text="Binary Code" />
                </items>
           </Menu>
         </menus>
@@ -112,6 +113,16 @@
                </font>
             </Label>
             <TextArea fx:id="intermediateMsg" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+               <font>
+                  <Font name="Consolas" size="18.0" />
+               </font>
+            </TextArea>
+            <Label text="Object Code" GridPane.columnIndex="2" GridPane.rowIndex="2">
+               <font>
+                  <Font name="Century Gothic" size="24.0" />
+               </font>
+            </Label>
+            <TextArea fx:id="codeBinMsg" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
                <font>
                   <Font name="Consolas" size="18.0" />
                </font>
