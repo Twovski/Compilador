@@ -304,8 +304,15 @@ public class Object {
     }
 
     private String formatBinary(String value, int size){
-        return String.format("%"+ size +"s", value)
+        String result = String.format("%"+ size +"s", value)
                 .replace(' ', '0');
+        if(size < 9)
+            return result;
+
+        String high, low;
+        low = result.substring(0, 8);
+        high = result.substring(8, 16);
+        return high + low;
     }
 
     private String convertToBinary(String value){
